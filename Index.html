@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Alfred Anoited — Data Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0d1117;
+    --surface2: #161b22;
+    --border: rgba(255,255,255,0.07);
+    --accent: #00d4a1;
+    --accent2: #0096ff;
+    --accent3: #ff6b35;
+    --text: #e8edf3;
+    --muted: #6b7a8d;
+    --heading: #ffffff;
+    --card: #0f1419;
+    --glow: rgba(0,212,161,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(8,12,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--heading);
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  .nav-cta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    padding: 0.5rem 1.2rem;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 4px;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .nav-cta:hover {
+    background: var(--accent);
+    color: #000;
+  }
+
+  /* HAMBURGER */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: rgba(8,12,16,0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    flex-direction: column;
+    gap: 1.2rem;
+    z-index: 99;
+  }
+
+  .mobile-menu.open { display: flex; }
+
+  .mobile-menu a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    transition: color 0.2s;
+  }
+
+  .mobile-menu a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 7rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,161,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,161,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,161,0.08) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(0,212,161,0.3);
+    padding: 0.35rem 0.8rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+    background: rgba(0,212,161,0.05);
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--heading);
+    margin-bottom: 1.2rem;
+  }
+
+  .hero h1 .line-accent { color: var(--accent); }
+  .hero h1 .line-dim { color: var(--muted); font-weight: 400; }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 540px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  .hero-sub strong { color: var(--text); font-weight: 500; }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent);
+    color: #000;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.8rem 1.8rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background: #00b589;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0,212,161,0.25);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.8rem 1.8rem;
+    border-radius: 4px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 3rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .stat-item {}
+
+  .stat-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--heading);
+    line-height: 1;
+  }
+
+  .stat-number span { color: var(--accent); }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.3rem;
+  }
+
+  /* PHOTO CARD */
+  .hero-photo-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .hero-photo-card {
+    width: 260px;
+    height: 320px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(0,212,161,0.1), 0 24px 60px rgba(0,0,0,0.5);
+  }
+
+  .hero-photo-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    filter: grayscale(20%);
+  }
+
+  .hero-photo-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,212,161,0.15) 0%, transparent 60%);
+  }
+
+  .photo-tag {
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 0.4rem 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+
+  .photo-deco {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 60px;
+    height: 60px;
+    border: 2px solid rgba(0,212,161,0.3);
+    border-radius: 8px;
+    transform: rotate(15deg);
+  }
+
+  /* SECTION */
+  section { padding: 5rem 2rem; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .section-tag::after {
+    content: '';
+    flex: 1;
+    max-width: 40px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.5;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    color: var(--heading);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 560px;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+
+  .about-text p {
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 1.2rem;
+    font-weight: 300;
+  }
+
+  .about-text p strong { color: var(--accent); font-weight: 500; }
+
+  .value-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .value-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.2rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.2s;
+  }
+
+  .value-item:hover { border-color: rgba(0,212,161,0.3); }
+
+  .value-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background: rgba(0,212,161,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .value-content h4 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--heading);
+    margin-bottom: 0.3rem;
+  }
+
+  .value-content p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* SKILLS */
+  .skills-section { background: var(--surface); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .skill-category {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: all 0.2s;
+  }
+
+  .skill-category:hover {
+    border-color: rgba(0,212,161,0.25);
+    transform: translateY(-2px);
+  }
+
+  .skill-cat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .skill-cat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(0,150,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  .skill-cat-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--heading);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .skill-cat-outcome {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .skill-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    letter-spacing: 0.03em;
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: rgba(0,212,161,0.2);
+    box-shadow: 0 0 40px rgba(0,212,161,0.05);
+  }
+
+  .project-header {
+    padding: 2rem 2rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .project-meta {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .project-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.7rem;
+    border-radius: 100px;
+    border: 1px solid;
+  }
+
+  .badge-batch { color: #0096ff; border-color: rgba(0,150,255,0.3); background: rgba(0,150,255,0.05); }
+  .badge-stream { color: #ff6b35; border-color: rgba(255,107,53,0.3); background: rgba(255,107,53,0.05); }
+  .badge-warehouse { color: #a855f7; border-color: rgba(168,85,247,0.3); background: rgba(168,85,247,0.05); }
+  .badge-etl { color: #00d4a1; border-color: rgba(0,212,161,0.3); background: rgba(0,212,161,0.05); }
+  .badge-quality { color: #fbbf24; border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.05); }
+
+  .project-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 4rem;
+    font-weight: 800;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+  }
+
+  .project-body {
+    padding: 1.5rem 2rem;
+  }
+
+  .project-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--heading);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-problem {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .project-section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+  }
+
+  .project-section-content {
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .arch-flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .arch-step {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.25rem 0.6rem;
+    color: var(--text);
+  }
+
+  .arch-arrow { color: var(--accent); font-size: 0.6rem; }
+
+  .results-bar {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .result-metric {}
+
+  .result-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .result-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.3rem;
+    line-height: 1.4;
+  }
+
+  .tools-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  /* SERVICES */
+  .services-section { background: var(--surface); }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .service-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.8rem;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .service-card:hover::before { opacity: 1; }
+  .service-card:hover { border-color: rgba(0,212,161,0.2); transform: translateY(-3px); }
+
+  .service-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: rgba(0,212,161,0.08);
+    border: 1px solid rgba(0,212,161,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .service-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--heading);
+    margin-bottom: 0.7rem;
+  }
+
+  .service-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 1rem;
+    font-weight: 300;
+  }
+
+  .service-roi {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    line-height: 1.5;
+    border-top: 1px solid var(--border);
+    padding-top: 0.8rem;
+    margin-top: 0.8rem;
+  }
+
+  /* TESTIMONIALS */
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .testimonial-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.8rem;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .testimonial-card:hover { border-color: rgba(0,212,161,0.2); }
+
+  .testimonial-quote {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.5rem;
+    font-size: 3rem;
+    color: rgba(0,212,161,0.1);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .testimonial-text {
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    font-weight: 300;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .author-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #000;
+    flex-shrink: 0;
+  }
+
+  .author-info h5 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--heading);
+    margin-bottom: 0.1rem;
+  }
+
+  .author-info p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .stars {
+    color: var(--accent);
+    font-size: 0.8rem;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* CONTACT */
+  .contact-section { background: var(--surface); }
+
+  .contact-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+
+  .contact-left p {
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 2rem;
+  }
+
+  .contact-info-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .contact-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+
+  .contact-info-item a {
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .contact-info-item a:hover { color: var(--accent); }
+
+  .contact-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(0,212,161,0.1);
+    border: 1px solid rgba(0,212,161,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .contact-form {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  .form-group label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--accent); }
+
+  .form-group textarea { min-height: 120px; resize: vertical; }
+
+  .form-group select option { background: var(--surface2); }
+
+  /* FOOTER */
+  footer {
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--heading);
+    text-decoration: none;
+  }
+
+  .footer-logo span { color: var(--accent); }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 0.8rem;
+  }
+
+  .footer-social a {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+
+  .footer-social a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .nav-links, .nav-cta { display: none; }
+    .hamburger { display: flex; }
+
+    .hero-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .hero-photo-wrap {
+      display: flex;
+      justify-content: center;
+      order: -1;
+    }
+
+    .hero-photo-card { width: 200px; height: 240px; }
+
+    .hero-badge { justify-content: center; }
+
+    .hero-sub { margin: 0 auto 2rem; }
+
+    .hero-actions { justify-content: center; }
+
+    .hero-stats { justify-content: center; gap: 1.5rem; }
+
+    .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+
+    .project-grid { grid-template-columns: 1fr; }
+
+    .project-header { flex-direction: column-reverse; }
+
+    .project-number { display: none; }
+
+    .contact-wrap { grid-template-columns: 1fr; gap: 2rem; }
+
+    footer { flex-direction: column; text-align: center; }
+
+    section { padding: 3.5rem 1.2rem; }
+
+    nav { padding: 1rem 1.2rem; }
+  }
+
+  @media (max-width: 480px) {
+    .results-bar { grid-template-columns: 1fr 1fr; }
+    .hero-stats { flex-direction: column; gap: 1.2rem; }
+    .stat-item { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Alfred<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#testimonials">Testimonials</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Hire Me</a>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" onclick="toggleMenu()">About</a>
+  <a href="#skills" onclick="toggleMenu()">Skills</a>
+  <a href="#projects" onclick="toggleMenu()">Projects</a>
+  <a href="#services" onclick="toggleMenu()">Services</a>
+  <a href="#testimonials" onclick="toggleMenu()">Testimonials</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content container">
+    <div class="hero-text">
+      <div class="hero-badge">Available for Remote Roles</div>
+      <h1>
+        I Build Data<br/>
+        <span class="line-accent">Infrastructure</span><br/>
+        <span class="line-dim">That Scales.</span>
+      </h1>
+      <p class="hero-sub">
+        Data Engineer turning <strong>raw, unreliable data</strong> into production-grade pipelines,
+        real-time systems, and analytical foundations — delivering measurable cost savings,
+        faster decisions, and systems that don't break at 2 AM.
+      </p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">↓ View Case Studies</a>
+        <a href="#contact" class="btn-secondary">→ Hire Me</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-number">5<span>+</span></div>
+          <div class="stat-label">Production Projects</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">10<span>M+</span></div>
+          <div class="stat-label">Records Processed Daily</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">40<span>%</span></div>
+          <div class="stat-label">Avg. Cost Reduction</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">99<span>.9%</span></div>
+          <div class="stat-label">Pipeline Uptime</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-photo-wrap">
+      <div class="photo-deco"></div>
+      <div class="hero-photo-card">
+        <img src="IMG_0812.jpeg" alt="Alfred Anoited — Data Engineer"/>
+      </div>
+      <div class="photo-tag">📍 Open to Remote</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="section-tag">About</div>
+    <h2 class="section-title">Solving Business Problems<br/>with Reliable Data</h2>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          I'm a <strong>Data Engineer</strong> who builds systems that organizations depend on to make accurate,
+          timely decisions. My focus is not on tools for their own sake — it's on delivering
+          infrastructure that holds up under pressure, scales without re-architecture, and
+          makes your analysts and data scientists faster.
+        </p>
+        <p>
+          I specialize in <strong>end-to-end data ownership</strong> — from ingestion and transformation
+          to orchestration, monitoring, and cloud optimization. Whether the challenge is a
+          fragmented legacy pipeline, a streaming system that lags behind real-time, or a
+          warehouse with untrusted data, I've solved it before.
+        </p>
+        <p>
+          I operate across <strong>FinTech, HealthTech, E-Commerce, Logistics,</strong> and
+          <strong>Real Estate</strong> — industries where data latency and quality directly
+          translate to revenue impact and regulatory exposure.
+        </p>
+      </div>
+      <ul class="value-list reveal">
+        <li class="value-item">
+          <div class="value-icon">⚙️</div>
+          <div class="value-content">
+            <h4>End-to-End Ownership</h4>
+            <p>From raw ingestion to BI-ready models. No handoff gaps, no blind spots.</p>
+          </div>
+        </li>
+        <li class="value-item">
+          <div class="value-icon">📊</div>
+          <div class="value-content">
+            <h4>Production-First Mindset</h4>
+            <p>Systems include monitoring, alerting, and graceful failure handling by default.</p>
+          </div>
+        </li>
+        <li class="value-item">
+          <div class="value-icon">💰</div>
+          <div class="value-content">
+            <h4>Cost-Aware Architecture</h4>
+            <p>Cloud spend is treated as a product metric. Every design decision considers efficiency.</p>
+          </div>
+        </li>
+        <li class="value-item">
+          <div class="value-icon">🚀</div>
+          <div class="value-content">
+            <h4>Business-Aligned Delivery</h4>
+            <p>I translate data requirements into technical roadmaps stakeholders can trust.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SKILLS -->
+<section class="skills-section" id="skills">
+  <div class="container">
+    <div class="section-tag">Technical Stack</div>
+    <h2 class="section-title">Skills Mapped to<br/>Business Outcomes</h2>
+    <p class="section-sub">Every tool in my stack is chosen for the problem it solves, not for its popularity.</p>
+    <div class="skills-grid">
+      <div class="skill-category reveal">
+        <div class="skill-cat-header">
+          <div class="skill-cat-icon">🐍</div>
+          <span class="skill-cat-title">Languages</span>
+        </div>
+        <p class="skill-cat-outcome">→ Rapid ETL scripting, automation, and data modelling</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">HTML</span>
+          <span class="skill-tag">Bash</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <div class="skill-cat-header">
+          <div class="skill-cat-icon">⚡</div>
+          <span class="skill-cat-title">Processing</span>
+        </div>
+        <p class="skill-cat-outcome">→ Batch and real-time data at any scale</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Apache Spark</span>
+          <span class="skill-tag">Kafka</span>
+          <span class="skill-tag">Flink</span>
+          <span class="skill-tag">Pandas</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <div class="skill-cat-header">
+          <div class="skill-cat-icon">🗄️</div>
+          <span class="skill-cat-title">Storage & Warehousing</span>
+        </div>
+        <p class="skill-cat-outcome">→ Single source of truth for enterprise analytics</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Snowflake</span>
+          <span class="skill-tag">BigQuery</span>
+          <span class="skill-tag">Redshift</span>
+          <span class="skill-tag">PostgreSQL</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <div class="skill-cat-header">
+          <div class="skill-cat-icon">🔄</div>
+          <span class="skill-cat-title">Orchestration & Transform</span>
+        </div>
+        <p class="skill-cat-outcome">→ Reliable, observable, self-healing workflows</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Airflow</span>
+          <span class="skill-tag">dbt</span>
+          <span class="skill-tag">Prefect</span>
+          <span class="skill-tag">Great Expectations</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <div class="skill-cat-header">
+          <div class="skill-cat-icon">☁️</div>
+          <span class="skill-cat-title">Cloud Platforms</span>
+        </div>
+        <p class="skill-cat-outcome">→ Scalable, cost-optimized cloud infrastructure</p>
+        <div class="skill-tags">
+          <span class="skill-tag">AWS</span>
+          <span class="skill-tag">GCP</span>
+          <span class="skill-tag">Azure</span>
+          <span class="skill-tag">S3 / GCS</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <div class="skill-cat-header">
+          <div class="skill-cat-icon">🔭</div>
+          <span class="skill-cat-title">Notebooks & Dev Tools</span>
+        </div>
+        <p class="skill-cat-outcome">→ Reproducible analysis and rapid prototyping</p>
+        <div class="skill-tags">
+          <span class="skill-tag">Jupyter</span>
+          <span class="skill-tag">VS Code</span>
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">Docker</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-tag">Case Studies</div>
+    <h2 class="section-title">Featured Projects</h2>
+    <p class="section-sub">End-to-end data engineering projects with production-level architecture and measurable outcomes.</p>
+
+    <div class="projects-grid">
+
+      <!-- PROJECT 1 -->
+      <div class="project-card reveal">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-badge badge-stream">Real-Time Streaming</span>
+            <span class="project-badge badge-etl">FinTech</span>
+          </div>
+          <div class="project-number">01</div>
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">Real-Time Fraud Detection Pipeline — FinTech</h3>
+          <p class="project-problem">
+            A digital payment platform was processing 2M+ daily transactions with fraud detection running on nightly batch jobs — meaning fraudulent transactions went undetected for up to 18 hours. Every hour of delay cost an estimated $85,000 in chargebacks.
+          </p>
+          <div class="project-grid">
+            <div>
+              <div class="project-section-label">Architecture</div>
+              <div class="arch-flow">
+                <span class="arch-step">Kafka Ingest</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Flink</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Snowflake</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Airflow Alert</span>
+              </div>
+            </div>
+            <div>
+              <div class="project-section-label">Key Challenge</div>
+              <div class="project-section-content">Achieving sub-second detection latency while maintaining schema consistency across 14 transaction event types ingested simultaneously.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Solution</div>
+              <div class="project-section-content">Built a Kafka-backed streaming pipeline with Flink consumer groups, sliding window aggregations, and a rule engine writing flags to Snowflake with automated Airflow alerting on breach events.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Data Source</div>
+              <div class="project-section-content">Live transaction event stream · 2.3M records/day · Avg record size 1.2KB · 14 event schemas</div>
+            </div>
+          </div>
+          <div class="project-section-label">Tools Used</div>
+          <div class="tools-row">
+            <span class="skill-tag">Apache Kafka</span>
+            <span class="skill-tag">Apache Flink</span>
+            <span class="skill-tag">Snowflake</span>
+            <span class="skill-tag">Apache Airflow</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">AWS MSK</span>
+            <span class="skill-tag">Great Expectations</span>
+          </div>
+        </div>
+        <div class="results-bar">
+          <div class="result-metric"><div class="result-value">97%</div><div class="result-label">Reduction in detection latency</div></div>
+          <div class="result-metric"><div class="result-value">2.3M</div><div class="result-label">Records processed daily</div></div>
+          <div class="result-metric"><div class="result-value">$1.2M</div><div class="result-label">Monthly chargeback savings</div></div>
+          <div class="result-metric"><div class="result-value">&lt;800ms</div><div class="result-label">End-to-end latency</div></div>
+        </div>
+      </div>
+
+      <!-- PROJECT 2 -->
+      <div class="project-card reveal">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-badge badge-warehouse">Data Warehouse</span>
+            <span class="project-badge badge-etl">E-Commerce</span>
+          </div>
+          <div class="project-number">02</div>
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">Unified Analytics Warehouse — E-Commerce Platform</h3>
+          <p class="project-problem">
+            An e-commerce company had 9 siloed data sources (Shopify, Google Ads, Stripe, CRM, inventory, logistics, support, email, social) with no single reliable view of customer lifetime value. Marketing was making $400K/month in spend decisions based on conflicting spreadsheets.
+          </p>
+          <div class="project-grid">
+            <div>
+              <div class="project-section-label">Architecture</div>
+              <div class="arch-flow">
+                <span class="arch-step">9 Sources</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Fivetran</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">BigQuery Raw</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">dbt Models</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">BI Layer</span>
+              </div>
+            </div>
+            <div>
+              <div class="project-section-label">Key Challenge</div>
+              <div class="project-section-content">Customer identity resolution across 9 systems with different ID formats, plus managing 340+ dbt models with no testing framework in place.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Solution</div>
+              <div class="project-section-content">Designed a medallion architecture (bronze/silver/gold) in BigQuery. Built 60+ dbt models with full test coverage, a unified customer entity table, and Airflow DAGs for incremental loads with automatic backfill.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Data Source</div>
+              <div class="project-section-content">9 SaaS sources · 18M+ customer records · 380GB data lake · Daily incremental + full refresh hybrid</div>
+            </div>
+          </div>
+          <div class="project-section-label">Tools Used</div>
+          <div class="tools-row">
+            <span class="skill-tag">dbt</span>
+            <span class="skill-tag">BigQuery</span>
+            <span class="skill-tag">Fivetran</span>
+            <span class="skill-tag">Apache Airflow</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">GCP</span>
+            <span class="skill-tag">Looker</span>
+          </div>
+        </div>
+        <div class="results-bar">
+          <div class="result-metric"><div class="result-value">68%</div><div class="result-label">Faster reporting cycle</div></div>
+          <div class="result-metric"><div class="result-value">18M+</div><div class="result-label">Unified customer records</div></div>
+          <div class="result-metric"><div class="result-value">99.4%</div><div class="result-label">Data accuracy rate</div></div>
+          <div class="result-metric"><div class="result-value">$180K</div><div class="result-label">Wasted ad spend recovered</div></div>
+        </div>
+      </div>
+
+      <!-- PROJECT 3 -->
+      <div class="project-card reveal">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-badge badge-batch">Batch Pipeline</span>
+            <span class="project-badge badge-etl">HealthTech</span>
+          </div>
+          <div class="project-number">03</div>
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">HIPAA-Compliant Patient Data Pipeline — HealthTech</h3>
+          <p class="project-problem">
+            A health data company was manually reconciling patient records across 3 hospital systems every week — a 72-hour manual process that delayed clinical reporting, introduced data entry errors, and created HIPAA audit exposure.
+          </p>
+          <div class="project-grid">
+            <div>
+              <div class="project-section-label">Architecture</div>
+              <div class="arch-flow">
+                <span class="arch-step">HL7 / FHIR API</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Python ETL</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">S3 Encrypted</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Redshift</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Airflow</span>
+              </div>
+            </div>
+            <div>
+              <div class="project-section-label">Key Challenge</div>
+              <div class="project-section-content">Data de-identification at ingestion, patient matching across 3 different EHR ID formats, and full audit logging for HIPAA compliance without performance degradation.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Solution</div>
+              <div class="project-section-content">Built automated Python ETL with deterministic hashing for PII de-identification, probabilistic patient matching algorithm, and Airflow DAGs with Slack alerting. Full audit trail stored in a separate encrypted S3 bucket.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Data Source</div>
+              <div class="project-section-content">3 hospital EHR systems · 4.2M patient records · HL7 v2 + FHIR R4 · Weekly full + daily delta loads</div>
+            </div>
+          </div>
+          <div class="project-section-label">Tools Used</div>
+          <div class="tools-row">
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">Apache Airflow</span>
+            <span class="skill-tag">Amazon Redshift</span>
+            <span class="skill-tag">AWS S3</span>
+            <span class="skill-tag">SQL</span>
+            <span class="skill-tag">AWS KMS</span>
+            <span class="skill-tag">Great Expectations</span>
+          </div>
+        </div>
+        <div class="results-bar">
+          <div class="result-metric"><div class="result-value">95%</div><div class="result-label">Reduction in reconciliation time</div></div>
+          <div class="result-metric"><div class="result-value">4.2M</div><div class="result-label">Patient records automated</div></div>
+          <div class="result-metric"><div class="result-value">Zero</div><div class="result-label">HIPAA audit findings</div></div>
+          <div class="result-metric"><div class="result-value">72h→4h</div><div class="result-label">Weekly reporting cycle</div></div>
+        </div>
+      </div>
+
+      <!-- PROJECT 4 -->
+      <div class="project-card reveal">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-badge badge-quality">Data Quality</span>
+            <span class="project-badge badge-etl">Logistics</span>
+          </div>
+          <div class="project-number">04</div>
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">Real-Time Supply Chain Observability System — Logistics</h3>
+          <p class="project-problem">
+            A logistics company's operations team was blind to pipeline failures until downstream teams reported wrong data — sometimes 6–8 hours after the fact. Silent failures in shipment tracking data were causing $300K/month in SLA penalty exposure.
+          </p>
+          <div class="project-grid">
+            <div>
+              <div class="project-section-label">Architecture</div>
+              <div class="arch-flow">
+                <span class="arch-step">IoT / API</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Kafka</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Spark</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">GE Validation</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Alert System</span>
+              </div>
+            </div>
+            <div>
+              <div class="project-section-label">Key Challenge</div>
+              <div class="project-section-content">Designing 280+ data quality rules across 40 schemas without creating alert fatigue, while ensuring critical failures triggered instant escalation vs. minor anomalies triggered warnings.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Solution</div>
+              <div class="project-section-content">Implemented Great Expectations checkpoint suite integrated into Spark streaming jobs. Built tiered alerting (critical → PagerDuty, warning → Slack) with automated data quarantine for failed records and a real-time quality dashboard.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Data Source</div>
+              <div class="project-section-content">Shipment IoT sensors + carrier APIs · 8.5M events/day · 40 data schemas · 5-second freshness SLA</div>
+            </div>
+          </div>
+          <div class="project-section-label">Tools Used</div>
+          <div class="tools-row">
+            <span class="skill-tag">Apache Spark</span>
+            <span class="skill-tag">Kafka</span>
+            <span class="skill-tag">Great Expectations</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">GCP Pub/Sub</span>
+            <span class="skill-tag">BigQuery</span>
+            <span class="skill-tag">PagerDuty</span>
+          </div>
+        </div>
+        <div class="results-bar">
+          <div class="result-metric"><div class="result-value">89%</div><div class="result-label">Faster failure detection</div></div>
+          <div class="result-metric"><div class="result-value">8.5M</div><div class="result-label">Events monitored/day</div></div>
+          <div class="result-metric"><div class="result-value">$300K</div><div class="result-label">Monthly SLA exposure eliminated</div></div>
+          <div class="result-metric"><div class="result-value">280+</div><div class="result-label">Data quality rules enforced</div></div>
+        </div>
+      </div>
+
+      <!-- PROJECT 5 -->
+      <div class="project-card reveal">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-badge badge-batch">Cloud Migration</span>
+            <span class="project-badge badge-etl">Real Estate</span>
+          </div>
+          <div class="project-number">05</div>
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">On-Premise to Cloud Data Migration — Real Estate Firm</h3>
+          <p class="project-problem">
+            A real estate analytics firm was running its entire data stack on aging on-premise servers — 14TB of property, transaction, and market data. Infrastructure costs were $28K/month, with frequent downtime and a 3-day lag on market reporting.
+          </p>
+          <div class="project-grid">
+            <div>
+              <div class="project-section-label">Architecture</div>
+              <div class="arch-flow">
+                <span class="arch-step">On-Prem Oracle</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">AWS DMS</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">S3 Data Lake</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Spark ETL</span>
+                <span class="arch-arrow">→</span>
+                <span class="arch-step">Snowflake</span>
+              </div>
+            </div>
+            <div>
+              <div class="project-section-label">Key Challenge</div>
+              <div class="project-section-content">Zero-downtime migration of 14TB from Oracle to Snowflake, with schema translation, data validation at each stage, and rollback capability without impacting daily operations.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Solution</div>
+              <div class="project-section-content">Executed phased migration using AWS DMS for CDC replication, Spark jobs for transformation and validation, Snowflake as the final warehouse. Built a dual-write period with automated reconciliation before cutover.</div>
+            </div>
+            <div>
+              <div class="project-section-label">Data Source</div>
+              <div class="project-section-content">On-premise Oracle DB · 14TB across 220 tables · 12M property records · Zero downtime requirement</div>
+            </div>
+          </div>
+          <div class="project-section-label">Tools Used</div>
+          <div class="tools-row">
+            <span class="skill-tag">Apache Spark</span>
+            <span class="skill-tag">Snowflake</span>
+            <span class="skill-tag">AWS DMS</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">AWS S3</span>
+            <span class="skill-tag">dbt</span>
+            <span class="skill-tag">Airflow</span>
+          </div>
+        </div>
+        <div class="results-bar">
+          <div class="result-metric"><div class="result-value">44%</div><div class="result-label">Infrastructure cost reduction</div></div>
+          <div class="result-metric"><div class="result-value">14TB</div><div class="result-label">Migrated with zero downtime</div></div>
+          <div class="result-metric"><div class="result-value">3d→6h</div><div class="result-label">Market report lag</div></div>
+          <div class="result-metric"><div class="result-value">99.97%</div><div class="result-label">Data fidelity post-migration</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SERVICES -->
+<section class="services-section" id="services">
+  <div class="container">
+    <div class="section-tag">Services</div>
+    <h2 class="section-title">What I Can Do<br/>For Your Business</h2>
+    <p class="section-sub">Clear service offerings focused on business outcomes, not just technical deliverables.</p>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-icon">🔧</div>
+        <h3 class="service-title">Data Pipeline Engineering</h3>
+        <p class="service-desc">Design and build reliable batch and streaming pipelines that process millions of records daily without manual intervention.</p>
+        <div class="service-roi">→ Typical outcome: 60–85% reduction in manual data tasks</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🏗️</div>
+        <h3 class="service-title">Data Warehouse Design</h3>
+        <p class="service-desc">Build a single source of truth with dbt-modeled, analyst-ready data marts that your BI tools can trust unconditionally.</p>
+        <div class="service-roi">→ Typical outcome: Reporting accuracy from ~73% to 99%+</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">☁️</div>
+        <h3 class="service-title">Cloud Migration & Optimization</h3>
+        <p class="service-desc">Migrate from on-premise or legacy cloud to modern stacks (AWS / GCP / Azure) with zero-downtime strategy and cost governance.</p>
+        <div class="service-roi">→ Typical outcome: 30–50% cloud cost reduction post-migration</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">⚡</div>
+        <h3 class="service-title">Real-Time Streaming Systems</h3>
+        <p class="service-desc">Build Kafka-backed streaming pipelines for fraud detection, operational monitoring, and real-time analytics with sub-second SLAs.</p>
+        <div class="service-roi">→ Typical outcome: Detection latency from hours to milliseconds</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🔍</div>
+        <h3 class="service-title">Data Quality & Observability</h3>
+        <p class="service-desc">Implement automated data quality frameworks with Great Expectations, alerting systems, and data lineage tracking so you know before your users do.</p>
+        <div class="service-roi">→ Typical outcome: Silent data failures detected 6+ hours earlier</div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon">🤝</div>
+        <h3 class="service-title">Data Engineering Consulting</h3>
+        <p class="service-desc">Audit your current data infrastructure, identify bottlenecks and cost inefficiencies, and deliver a prioritized technical roadmap.</p>
+        <div class="service-roi">→ Typical outcome: Actionable 90-day improvement plan</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-tag">Testimonials</div>
+    <h2 class="section-title">What Clients Say</h2>
+    <div class="testimonials-grid">
+
+      <div class="testimonial-card reveal">
+        <div class="testimonial-quote">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Alfred delivered a streaming pipeline that cut our fraud detection window from 18 hours to under a second. That is not a technical win — that is a business transformation. He understood the revenue implications from day one and designed accordingly.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, #00d4a1, #0096ff);">TK</div>
+          <div class="author-info">
+            <h5>Tobi Kayode</h5>
+            <p>Head of Engineering · PayRoute Africa</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal">
+        <div class="testimonial-quote">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Our marketing team was making $400K monthly decisions on contradictory spreadsheets. Alfred built us a unified warehouse in 6 weeks. We recovered $180K in ad spend waste within the first month using insights we never had before.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, #ff6b35, #fbbf24);">AM</div>
+          <div class="author-info">
+            <h5>Amaka Madu</h5>
+            <p>VP of Growth · CartHive Commerce</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal">
+        <div class="testimonial-quote">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">We had real concerns about migrating 14TB of sensitive property data with zero downtime. Alfred's phased approach was methodical and transparent. We came through with 99.97% fidelity and $14K in monthly savings. I'd bring him back for any infrastructure project.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, #a855f7, #0096ff);">CE</div>
+          <div class="author-info">
+            <h5>Chukwuemeka Eze</h5>
+            <p>CTO · PropIndex Analytics</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal">
+        <div class="testimonial-quote">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Alfred built our data quality monitoring system and the change was immediate. We went from finding out about pipeline failures from upset analysts to catching them automatically before anyone noticed. His documentation was also excellent — our team understood every component.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, #00d4a1, #fbbf24);">FO</div>
+          <div class="author-info">
+            <h5>Funmi Okonkwo</h5>
+            <p>Data Operations Lead · SwiftShip Logistics</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal">
+        <div class="testimonial-quote">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">What sets Alfred apart is that he thinks about your business problem first and then picks the right technology. He didn't just build what we asked for — he pushed back on one of our requirements that would have cost us 3x more cloud spend. That kind of honesty is rare.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, #ff6b35, #a855f7);">BI</div>
+          <div class="author-info">
+            <h5>Benjamin Idowu</h5>
+            <p>Founder · MedSync Health</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal">
+        <div class="testimonial-quote">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">Alfred's Airflow orchestration work reduced our weekly reconciliation from 72 hours to 4 hours. He set up monitoring, alerting, and even trained our internal team on maintaining the system. It still runs without issues 8 months later.</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background: linear-gradient(135deg, #0096ff, #00d4a1);">NO</div>
+          <div class="author-info">
+            <h5>Ngozi Obiechina</h5>
+            <p>Director of Data · ClinBase Health</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="section-tag">Contact</div>
+    <h2 class="section-title">Ready to Build<br/>Something That Scales?</h2>
+    <div class="contact-wrap">
+      <div class="contact-left reveal">
+        <p>Whether you need a production pipeline built from scratch, an audit of your existing infrastructure, or a full cloud migration — let's talk about what your data can do for your business.</p>
+        <ul class="contact-info-list">
+          <li class="contact-info-item">
+            <div class="contact-icon">📞</div>
+            <a href="tel:+2348082482308">+234 808 248 2308</a>
+          </li>
+          <li class="contact-info-item">
+            <div class="contact-icon">✉️</div>
+            <a href="mailto:alfredanoited@gmail.com">alfredanoited@gmail.com</a>
+          </li>
+          <li class="contact-info-item">
+            <div class="contact-icon">🌍</div>
+            <span>Available Globally · Remote</span>
+          </li>
+          <li class="contact-info-item">
+            <div class="contact-icon">⚡</div>
+            <span>Typical response within 24 hours</span>
+          </li>
+        </ul>
+      </div>
+      <div class="contact-form reveal">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" placeholder="e.g. Amaka Obi"/>
+        </div>
+        <div class="form-group">
+          <label>Company / Organisation</label>
+          <input type="text" placeholder="e.g. FinTech Startup Ltd"/>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="hello@company.com"/>
+        </div>
+        <div class="form-group">
+          <label>Service Needed</label>
+          <select>
+            <option value="">Select a service...</option>
+            <option>Data Pipeline Engineering</option>
+            <option>Data Warehouse / dbt Modelling</option>
+            <option>Real-Time Streaming System</option>
+            <option>Cloud Migration</option>
+            <option>Data Quality & Observability</option>
+            <option>Infrastructure Audit / Consulting</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tell me about your challenge</label>
+          <textarea placeholder="Describe your data challenge, team size, and timeline..."></textarea>
+        </div>
+        <a href="mailto:alfredanoited@gmail.com" class="btn-primary" style="width:100%; justify-content:center; text-align:center;">
+          Send Message →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#home" class="footer-logo">Alfred<span>.</span></a>
+  <p class="footer-copy">© 2026 Alfred Anoited · Data Engineer · All rights reserved</p>
+  <div class="footer-social">
+    <a href="mailto:alfredanoited@gmail.com" title="Email">✉</a>
+    <a href="tel:+2348082482308" title="Phone">📞</a>
+    <a href="https://linkedin.com" title="LinkedIn">in</a>
+    <a href="https://github.com" title="GitHub">⌥</a>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('open');
+  }
+
+  // Close mobile menu on outside click
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    const hamburger = document.querySelector('.hamburger');
+    if (!menu.contains(e.target) && !hamburger.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Smooth active nav
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      if (window.scrollY >= section.offsetTop - 120) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.style.color = link.getAttribute('href') === '#' + current
+        ? 'var(--accent)' : '';
+    });
+  });
+</script>
+</body>
+</html>
